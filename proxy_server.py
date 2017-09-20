@@ -13,7 +13,8 @@ from collections import defaultdict
 
 host = '0.0.0.0'
 port = int(sys.argv[1])
-server_ip = '192.168.149.140'
+server_ip = '192.168.1.103'
+iface = 'mon0'
 
 httphead = 'HTTP/1.1 200 ok\r\n\r\n'
 ip_dict = defaultdict(dict)
@@ -31,9 +32,9 @@ def prn(pkt):
     headers = {i.split(": ")[0]:i.split(": ")[1] for i in pkt.Headers.split("\r\n")}
     data = pkt.load if pkt.Method=='POST' else 'None'
     #html += '<a href="%s">%s<a><br>\n'%(url,url)
-    ip_dict[pkt[IP].src][url] = (pkt.Method,headers,data)
+    ip_dict[pkt[IP].src][url] = (pkt.Method, headers, data)
 
-sniff_thread = threading.Thread(target=sniff, kwargs={'iface':'mon0', 'prn':prn, 'filter':'tcp[13]&8==8'})
+sniff_thread = threading.Thread(target=sniff, kwargs={'iface':iface, 'prn':prn, 'filter':'tcp[13]&8==8'})
 sniff_thread.setDaemon(True)
 sniff_thread.start()
 
@@ -65,7 +66,7 @@ while True:
             conn.close()
         elif req_body.Path[1:] in ip_dict.keys():
             ip = req_body.Path[1:]
-            html = '</br>\n'.join(['<a href="{0}/{1}">{2}====>{3}<a>'.format(ip, url.encode('base64'), value[0],  url[:100]) for url,value in ip_dict[ip].items()])
+            html = '</br>\n'.join(['<a href="{0}/{1}" style="color:{2}">{3}====>{4}<a>'.format(ip, url.encode('base64'), '#FF3811' if 'Cookie' in value[1].keys() else '#4590F9', value[0],  url[:100]) for url,value in ip_dict[ip].items()])
             conn.send(httphead+html)
             conn.close()
         else:

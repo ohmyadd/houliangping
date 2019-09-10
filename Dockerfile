@@ -14,7 +14,7 @@ RUN export uid=1000 gid=1000 && \
     echo "hou ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/hou && \
     chmod 0440 /etc/sudoers.d/hou && \
     chown ${uid}:${gid} -R /home/hou && \
-    echo "DISPLAY=:0" >> /etc/profile
+    echo "export DISPLAY=:0" >> /etc/profile
 
 RUN cd /home/hou && \
     sed -i 's/ports.ubuntu.com/mirrors.aliyun.com/' /etc/apt/sources.list && \

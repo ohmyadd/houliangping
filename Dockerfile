@@ -32,10 +32,12 @@ RUN apt install -y libxt6 libxrender1 libxext6 libx11-6 libstartup-notification0
     wget http://mirrors.aliyun.com/ubuntu-ports/pool/main/f/firefox/firefox_45.0.2+build1-0ubuntu1_${arch1}.deb -O firefox.deb && \
     dpkg -i firefox.deb
 
-
 CMD sleep 1000d
 
+RUN apt install -y ttf-wqy-microhei
+
 COPY proxy_client.py /home/hou/
-COPY proxy_server.py /home/hou
+COPY proxy_server.py /home/hou/
+COPY run.sh /home/hou/
 
 WORKDIR /home/hou

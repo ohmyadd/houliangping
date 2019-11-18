@@ -16,8 +16,7 @@ import scapy_http.http as http
 host = '0.0.0.0'
 server_ip = sys.argv[1]
 port = int(sys.argv[2])
-iface = 'wlan1mon'
-#iface = 'enxb827eb82e49a'
+iface = 'mon0'
 
 httphead = 'HTTP/1.1 200 ok\r\n\r\n'
 ip_dict = defaultdict(dict)
@@ -25,7 +24,7 @@ ip_dict = defaultdict(dict)
 if os.path.exists('./proxy_server.json2'):
     try:
         with open('proxy_server.json2') as f:
-            ip_dict = json.load(f)
+            ip_dict.update(json.load(f))
     except:
         pass
 
